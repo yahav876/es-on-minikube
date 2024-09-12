@@ -1,0 +1,62 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: elasticsearch-alerts
+  labels:
+    prometheus: k8s
+    role: alert-rules
+spec:
+  groups:
+  - name: elasticsearch.rules
+    rules:
+    # Cluster Health Alerts
+    - alert: ElasticsearchClusterRed
+      expr: elasticsearch_cluster_health_status{color="red"} == 1
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Elasticsearch cluster status is RED"
+        description: "The Elasticsearch cluster status is RED for more than 5 minutes."
+        runbook: "https://your-runbook-url.com/elasticsearch-red"
+
+    - alert: ElasticsearchClusterYellow
+      expr: elasticsearch_cluster_health_status{color="yellow"} == 1
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Elasticsearch cluster status is Yellow"
+        description: "The Elasticsearch cluster status is Yellow for more than 15 minutes."
+        runbook: "https://your-runbook-url.com/elasticsearch-yellow"
+
+    - alert: ElasticsearchLowNumberOfNodes
+      expr: elasticsearch_cluster_health_number_of_nodes{cluster="XXX:es"} < (5)
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Low number of Elasticsearch nodes"
+        description: "The number of nodes in the Elasticsearch cluster {{ $labels.cluster }} is below the desired threshold for more than 5 minutes."
+
+
+    # High CPU Usage
+    - alert: ElasticsearchHighCPUUsage
+      expr: elasticsearch_os_cpu_percent > 85
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High CPU usage on Elasticsearch node"
+        description: "The CPU usage on an Elasticsearch node is {{ $value }} for more than 5 minutes."
+
+    # High Memory Usage
+    - alert: ElasticsearchHighMemoryUsage
+      expr: elasticsearch_jvm_memory_used_percent > 0.85
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High memory usage on Elasticsearch node"
+        description: "JVM memory usage on an Elasticsearch node is {{ $value }}  for more than 5 minutes."
+

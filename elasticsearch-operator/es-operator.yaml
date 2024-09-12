@@ -1,0 +1,62 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: eck-elasticsearch
+  annotations:
+    eck.k8s.elastic.co/license: basic
+  namespace: monitoring
+spec:
+  version: 8.12.1
+  nodeSets:
+  - name: master-nodes
+    count: 1
+    config:
+      node.roles: ["master"]
+      node.store.allow_mmap: false
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              cpu: 0.5
+              memory: 2Gi
+            limits:
+              cpu: 1
+              memory: 2Gi
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: standard
+
+  - name: data-nodes
+    count: 1
+    config:
+      node.roles: ["data"]
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              cpu: 0.5
+              memory: 1Gi
+            limits:
+              cpu: 1
+              memory: 1Gi
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: standard
