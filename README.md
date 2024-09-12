@@ -62,10 +62,7 @@ Once the script completes, verify that the Elasticsearch operator is running by 
 kubectl get pods -n monitoring
 ```
 
-### 4. Run es locally
+### 4. Access Elasticsearch locally
 ```
 kubectl port-forward -n monitoring  service/eck-elasticsearch-es-http 9200
 ```
-
-
-

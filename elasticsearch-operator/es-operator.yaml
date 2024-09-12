@@ -19,8 +19,8 @@ spec:
         - name: elasticsearch
           resources:
             requests:
-              cpu: 0.5
-              memory: 2Gi
+              cpu: 0.1
+              memory: 512Mi
             limits:
               cpu: 1
               memory: 2Gi
@@ -36,7 +36,7 @@ spec:
         storageClassName: standard
 
   - name: data-nodes
-    count: 1
+    count: 3
     config:
       node.roles: ["data"]
     podTemplate:
@@ -45,7 +45,7 @@ spec:
         - name: elasticsearch
           resources:
             requests:
-              cpu: 0.5
+              cpu: 0.1
               memory: 1Gi
             limits:
               cpu: 1
